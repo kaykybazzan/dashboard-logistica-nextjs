@@ -21,10 +21,12 @@ export function ExtrairArquivoExcel(
             const sheetname = workbook.SheetNames[0]
             const worksheet = workbook.Sheets[sheetname]
 
-            // Pega o cabeçalho real da planilha (linha 1), não as chaves da primeira linha de dados.
-            // Isso evita falso-negativo quando a primeira linha tem alguma célula vazia
-            // (ex: "Motivo" em branco por não haver ocorrência naquela entrega).
-            const headerRow = (XLSX.utils.sheet_to_json(worksheet, { header: 1 })[0] as string[]) ?? []
+            // Pega o cabeçalho real da planilha (linha 1) e remove espaços
+            // acidentais no início/fim de cada nome de coluna (ex: "Motivo ").
+            const headerRowBruto = (XLSX.utils.sheet_to_json(worksheet, { header: 1 })[0] as string[]) ?? []
+            const headerRow = headerRowBruto.map((coluna) => String(coluna ?? "").trim())
+
+            console.log("Cabeçalho exato lido:", JSON.stringify(headerRow))
 
             const jsondata = XLSX.utils.sheet_to_json(worksheet) as any[]
 

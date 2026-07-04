@@ -1,17 +1,17 @@
 function parseDataBR(valor: any): Date {
-  if (!valor) return new Date(NaN)
-  if (valor instanceof Date) return valor
-  if (typeof valor === "number") {
+    if (!valor) return new Date(NaN)
+    if (valor instanceof Date) return valor
+    if (typeof valor === "number") {
     const utc_days = Math.floor(valor - 25569)
     const utc_value = utc_days * 86400
     const date_info = new Date(utc_value * 1000)
     return new Date(date_info.getUTCFullYear(), date_info.getUTCMonth(), date_info.getUTCDate())
-  }
-  if (typeof valor === "string") {
+    }
+    if (typeof valor === "string") {
     const [dia, mes, ano] = valor.split("/").map(Number)
     return new Date(ano, mes - 1, dia)
-  }
-  return new Date(NaN)
+    }
+    return new Date(NaN)
 }
 
 export function indicadores (dadoslimpos: any[]) {
