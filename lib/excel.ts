@@ -21,12 +21,9 @@ export function ExtrairArquivoExcel(
             const sheetname = workbook.SheetNames[0]
             const worksheet = workbook.Sheets[sheetname]
 
-            // Pega o cabeçalho real da planilha (linha 1) e remove espaços
-            // acidentais no início/fim de cada nome de coluna (ex: "Motivo ").
             const headerRowBruto = (XLSX.utils.sheet_to_json(worksheet, { header: 1 })[0] as string[]) ?? []
             const headerRow = headerRowBruto.map((coluna) => String(coluna ?? "").trim())
 
-            console.log("Cabeçalho exato lido:", JSON.stringify(headerRow))
 
             const jsondata = XLSX.utils.sheet_to_json(worksheet) as any[]
 
