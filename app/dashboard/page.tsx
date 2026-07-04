@@ -3,40 +3,46 @@
 import { SectionCards } from "@/components/indicadores"
 import { ChartBarDefault } from "@/components/grafico_barras"
 import { ChartPieDonut } from "@/components/grafico_pizza"
-import { indicadores, Dashboard } from "@/lib/calculos"
+import { indicadores, Dashboard as calcularDashboard } from "@/lib/calculos"
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 
 
-function dashboard() {
+function DashboardPage() {
 
+    const router = useRouter()
     const [dadosPlanilha, setdadosPlanilha] = useState<any[]>([])
 
-    useEffect (() => {
+    useEffect(() => {
         const dadosGet = localStorage.getItem("DadosExcel")
 
-        if(dadosGet) {
-            setdadosPlanilha(JSON.parse(dadosGet))
+        if (dadosGet) {
+            try {
+                setdadosPlanilha(JSON.parse(dadosGet))
+            } catch {
+                router.push("/")
+            }
+        } else {
+            router.push("/")
         }
-    },[]
-        
-)   
-    const calculoIndicadores = indicadores(dadosPlanilha)
-    const calculosDashboard = Dashboard(dadosPlanilha)
+    }, [])
 
-    
+    const calculoIndicadores = indicadores(dadosPlanilha)
+    const calculosDashboard = calcularDashboard(dadosPlanilha)
+
     return (
         <div className="min-h-screen w-full bg-gray-100">
-        <h1 className="flex items-center justify-center p-10 text-5xl font-bold">Dashboard de Logística</h1>
-            <SectionCards data={calculoIndicadores}/>
+            <h1 className="flex items-center justify-center p-10 text-5xl font-bold">Dashboard de Logística</h1>
+            <SectionCards data={calculoIndicadores} />
 
             <div className="grid grid-cols-2 p-6 gap-6">
-                <ChartBarDefault data={calculosDashboard.SLA} config={calculosDashboard.chartConfig}/>
-                <ChartPieDonut data={calculosDashboard.chartData} config={calculosDashboard.chartConfig}/>
-            </div >
+                <ChartBarDefault data={calculosDashboard.SLA} config={calculosDashboard.chartConfig} />
+                <ChartPieDonut data={calculosDashboard.chartData} config={calculosDashboard.chartConfig} />
+            </div>
 
         </div>
 
     )
 }
 
-export default dashboard 
+export default DashboardPage
