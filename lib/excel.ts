@@ -21,6 +21,11 @@ export function ExtrairArquivoExcel(
             const sheetname = workbook.SheetNames[0]
             const worksheet = workbook.Sheets[sheetname]
 
+            // Pega o cabeçalho real da planilha (linha 1), não as chaves da primeira linha de dados.
+            // Isso evita falso-negativo quando a primeira linha tem alguma célula vazia
+            // (ex: "Motivo" em branco por não haver ocorrência naquela entrega).
+            const headerRow = (XLSX.utils.sheet_to_json(worksheet, { header: 1 })[0] as string[]) ?? []
+
             const jsondata = XLSX.utils.sheet_to_json(worksheet) as any[]
 
             const colunasNecessarias = [
@@ -32,9 +37,8 @@ export function ExtrairArquivoExcel(
                 "Entrega",
                 "Transportadora",
             ]
-            const colunasArquivo = Object.keys(jsondata[0] ?? {})
             const faltando = colunasNecessarias.filter(
-                (coluna) => !colunasArquivo.includes(coluna)
+                (coluna) => !headerRow.includes(coluna)
             )
 
             if (faltando.length > 0) {
