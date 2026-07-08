@@ -1,13 +1,12 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
+import { gerarChave } from "@/lib/normalizacao"
 import { Bar, BarChart, CartesianGrid, XAxis, Cell, YAxis } from "recharts"
 
 import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
@@ -59,14 +58,14 @@ export function ChartBarDefault({data, config}: {data:any[], config:any}) {
                         />
                         <Bar dataKey="SLA" radius={8}>
                             {data.map((entry, index) => {
-                                const chaveTransp = entry.Transportadora.toLowerCase().replace(/[^a-z0-9]/g, "");
-                                return (
-                                    <Cell 
-                                        key={`cell-${index}`} 
-                                        fill={config[chaveTransp]?.color || "#3b82f6"} 
-                                    />
-                                )
-                            })}
+                            const chaveTransp = gerarChave(entry.Transportadora);
+                            return (
+                                <Cell 
+                                    key={`cell-${index}`} 
+                                    fill={config[chaveTransp]?.color || "#3b82f6"} 
+                                />
+                            )
+                        })}
                         </Bar>
                     </BarChart>
                 </ChartContainer>

@@ -16,12 +16,25 @@ const COLUNAS_OBRIGATORIAS = [
 export default function Home() {
   const router = useRouter();
   const [arrastando, setArrastando] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
 
   function processarArquivo(file: File) {
-    ExtrairArquivoExcel(file, (dadosLimpos) => {
-      localStorage.setItem("DadosExcel", JSON.stringify(dadosLimpos));
-      router.push("/dashboard");
-    });
+    setErro(null);
+    ExtrairArquivoExcel(
+      file,
+      (dadosLimpos, relatorio) => {
+        try {
+          localStorage.setItem("DadosExcel", JSON.stringify(dadosLimpos));
+          if (relatorio.erros.length > 0 || relatorio.avisos.length > 0) {
+            localStorage.setItem("RelatorioValidacao", JSON.stringify(relatorio));
+          }
+          router.push("/dashboard");
+        } catch {
+          setErro("Não foi possível salvar os dados (arquivo grande demais para o navegador).");
+        }
+      },
+      (mensagem) => setErro(mensagem)
+    );
   }
 
   function handleDrop(e: DragEvent<HTMLLabelElement>) {
@@ -57,6 +70,7 @@ export default function Home() {
                 processarArquivo(file);
               }}
             />
+            {erro && <p className="mt-3 text-sm text-red-600">{erro}</p>}
 
             <label
               htmlFor="subir-csv"
@@ -66,11 +80,10 @@ export default function Home() {
               }}
               onDragLeave={() => setArrastando(false)}
               onDrop={handleDrop}
-              className={`flex h-64 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 text-center transition-colors ${
-                arrastando
+              className={`flex h-64 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 text-center transition-colors ${arrastando
                   ? "border-blue-400 bg-blue-50"
                   : "border-slate-200 bg-slate-50/50 hover:border-blue-300 hover:bg-blue-50/40"
-              }`}
+                }`}
             >
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
                 <UploadCloudIcon className="h-7 w-7 text-blue-600" />

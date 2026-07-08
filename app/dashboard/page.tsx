@@ -18,7 +18,9 @@ function DashboardPage() {
 
         if (dadosGet) {
             try {
-                setdadosPlanilha(JSON.parse(dadosGet))
+                const parsed = JSON.parse(dadosGet)
+                if (!Array.isArray(parsed)) throw new Error("formato inesperado")
+                setdadosPlanilha(parsed)
             } catch {
                 router.push("/")
             }
